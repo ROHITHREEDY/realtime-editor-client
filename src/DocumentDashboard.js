@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { authFetch } from './authFetch';  // Import the helper
 import { AuthContext } from './AuthContext'; // Import AuthContext
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
+// Use API_URL + "/api/..." in your fetch or axios calls
+
 
 function DocumentDashboard() {
   const [documents, setDocuments] = useState([]);

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import LoginPage from './LoginPage';
 import SignupPage from './SignupPage';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
+// Use API_URL + "/api/..." in your fetch or axios calls
+
 
 function AuthPage() {
   const [tab, setTab] = useState('login'); // 'login' or 'signup'
