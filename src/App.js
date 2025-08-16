@@ -1,59 +1,41 @@
-import React, { useEffect, useRef } from 'react';
-import io from 'socket.io-client';
-import './App.css'; // Import your CSS file
-
-const socket = io('https://realtime-editor-backend-a8xx.onrender.com');
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import DocumentDashboard from './DocumentDashboard';
+import EditorPage from './EditorPage';
+import AuthPage from './AuthPage';   // Import new tabbed auth page
+import { AuthProvider, AuthContext } from './AuthContext';
+import PrivateRoute from './PrivateRoute';
+import './App.css';
 
 function App() {
-  const textareaRef = useRef();
-
-  useEffect(() => {
-    const handleReceiveChanges = (data) => {
-      if (textareaRef.current && textareaRef.current.value !== data) {
-        textareaRef.current.value = data;
-      }
-    };
-
-    socket.on('receive-changes', handleReceiveChanges);
-
-    return () => {
-      socket.off('receive-changes', handleReceiveChanges);
-    };
-  }, []);
-
-  function handleChange(e) {
-    const value = e.target.value;
-    socket.emit('send-changes', value);
-  }
-
   return (
-    <div className="App">
-      <header className="App-header">
-        Real-Time Collaborative Editor
-      </header>
-      <main className="editor-container">
-        <textarea
-          ref={textareaRef}
-          rows={12}
-          onChange={handleChange}
-          placeholder="Start typing..."
-        />
-        <p style={{ color: '#888' }}>
-          Open this page in two browser windows to test live editing!
-        </p>
-      </main>
-      <footer className="footer">
-        Built by Rohit —{' '}
-        <a
-          href="https://github.com/your-github"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: '#1976d2' }}
-        >
-          GitHub
-        </a>
-      </footer>
-    </div>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/auth" element={<AuthPage />} />
+
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <DocumentDashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/doc/:id"
+            element={
+              <PrivateRoute>
+                <EditorPage />
+              </PrivateRoute>
+            }
+          />
+
+          {/* Redirect any unknown route to /auth */}
+          <Route path="*" element={<Navigate to="/auth" replace />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
