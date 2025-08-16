@@ -1,45 +1,58 @@
 import React, { useEffect, useRef } from 'react';
 import io from 'socket.io-client';
+import './App.css'; // Import your CSS file
 
 const socket = io('https://realtime-editor-backend-a8xx.onrender.com');
-
-
-
- // Connect to backend
 
 function App() {
   const textareaRef = useRef();
 
   useEffect(() => {
-    // When receiving changes, update textarea value
-    socket.on('receive-changes', data => {
-      if (textareaRef.current) {
+    const handleReceiveChanges = (data) => {
+      if (textareaRef.current && textareaRef.current.value !== data) {
         textareaRef.current.value = data;
       }
-    });
+    };
+
+    socket.on('receive-changes', handleReceiveChanges);
 
     return () => {
-      socket.off('receive-changes');
+      socket.off('receive-changes', handleReceiveChanges);
     };
   }, []);
 
   function handleChange(e) {
     const value = e.target.value;
-    // Send changes to server
     socket.emit('send-changes', value);
   }
 
   return (
-    <div style={{ margin: '50px auto', maxWidth: '600px' }}>
-      <h2>Real-Time Collaborative Editor</h2>
-      <textarea
-        ref={textareaRef}
-        rows={12}
-        style={{ width: '100%', fontSize: '18px' }}
-        onChange={handleChange}
-        placeholder="Start typing..."
-      />
-      <p>Open this page in two browser windows to test live editing!</p>
+    <div className="App">
+      <header className="App-header">
+        Real-Time Collaborative Editor
+      </header>
+      <main className="editor-container">
+        <textarea
+          ref={textareaRef}
+          rows={12}
+          onChange={handleChange}
+          placeholder="Start typing..."
+        />
+        <p style={{ color: '#888' }}>
+          Open this page in two browser windows to test live editing!
+        </p>
+      </main>
+      <footer className="footer">
+        Built by Rohit —{' '}
+        <a
+          href="https://github.com/your-github"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: '#1976d2' }}
+        >
+          GitHub
+        </a>
+      </footer>
     </div>
   );
 }
