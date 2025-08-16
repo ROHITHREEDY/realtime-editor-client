@@ -2,6 +2,8 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+
 function SignupPage() {
   const [form, setForm] = useState({ username: '', email: '', password: '' });
   const [error, setError] = useState('');
@@ -14,7 +16,7 @@ function SignupPage() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    fetch('/api/auth/register', {
+    fetch(`${API_URL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form)
@@ -42,7 +44,7 @@ function SignupPage() {
         <button type="submit">Create Account</button>
       </form>
       <p style={{ textAlign: 'center', marginTop: '20px' }}>
-        Already have an account? <a href="/login" style={{ color: '#1976d2' }}>Log in</a>
+        Already have an account? <a href="/auth" style={{ color: '#1976d2' }}>Log in</a>
       </p>
     </div>
   );
